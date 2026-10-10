@@ -12,6 +12,8 @@ import org.example.model.OutsidePublicAreaUpdate;
 import org.example.repository.HomeAdministrativeAreaReferenceRepository;
 import org.example.repository.OutsidePublicAreaRepository;
 import org.example.service.AccessScopeService.CallingAdmin;
+import org.example.validation.Din91379TextValidation;
+import org.example.validation.Din91379Type;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,7 @@ public class OutsidePublicAreaService {
     private final HomeAdministrativeAreaReferenceRepository homeAdministrativeAreaReferenceRepository;
     private final OutsidePublicAreaMapper mapper;
     private final AccessScopeService accessScopeService;
+    private final Din91379TextValidation textValidation;
 
     @Transactional(readOnly = true)
     public Optional<OutsidePublicArea> getById(UUID id) {
@@ -62,7 +65,7 @@ public class OutsidePublicAreaService {
         accessScopeService.requireHomeAdministrativeAreaInScope(admin, parent.getId());
 
         OutsidePublicAreaEntity entity = new OutsidePublicAreaEntity();
-        entity.setName(requireName(dto.getName()));
+        entity.setName(textValidation.normalizeAndValidate(requireName(dto.getName()), Din91379Type.DATATYPE_C));
         entity.setHomeAdministrativeArea(parent);
         entity.setZone(parent.getZone());
 
@@ -84,7 +87,7 @@ public class OutsidePublicAreaService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 
         if (dto.getName() != null) {
-            entity.setName(requireName(dto.getName()));
+            entity.setName(textValidation.normalizeAndValidate(requireName(dto.getName()), Din91379Type.DATATYPE_C));
         }
 
         if (dto.getHomeAdministrativeAreaId() != null) {

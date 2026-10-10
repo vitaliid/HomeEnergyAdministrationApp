@@ -1,6 +1,7 @@
 package org.example.validation;
 
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.example.exception.BusinessException;
 import org.example.exception.ErrorCode;
 import org.springframework.core.io.ClassPathResource;
@@ -21,6 +22,7 @@ import java.text.Normalizer;
  * the chosen DIN 91379 datatype (din-norm-91379-datatypes.xsd). Normalization always happens first,
  * so that e.g. "e" + U+0301 is accepted as the precomposed "é".
  */
+@Slf4j
 @Service
 public class Din91379TextValidation {
 
@@ -45,9 +47,6 @@ public class Din91379TextValidation {
     /**
      * Normalizes the text to Unicode Normalization Form C and then validates it against the given
      * DIN 91379 datatype. The order matters: e.g. "e" + U+0301 is accepted as the precomposed "é".
-     *
-     * @return the normalized text; null stays null
-     * @throws BusinessException INVALID_FIELD_FORMAT if the normalized text contains characters outside the datatype
      */
     public String normalizeAndValidate(String text, Din91379Type type) {
         if (text == null) {
@@ -57,6 +56,7 @@ public class Din91379TextValidation {
         String normalized = Normalizer.normalize(text, Normalizer.Form.NFC);
 
         if (!conformsTo(normalized, type)) {
+            log.warn("DIN 91379 {} validation failed for a text of length {}", type, normalized.length());
             throw new BusinessException(ErrorCode.INVALID_FIELD_FORMAT);
         }
 

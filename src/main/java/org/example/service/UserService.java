@@ -7,6 +7,8 @@ import org.example.entity.UserEntity;
 import org.example.entity.UserRoleEntity;
 import org.example.exception.BusinessException;
 import org.example.exception.ErrorCode;
+import org.example.validation.Din91379TextValidation;
+import org.example.validation.Din91379Type;
 import org.example.mapper.UserMapper;
 import org.example.mapper.UserRoleMapper;
 import org.example.model.User;
@@ -44,14 +46,15 @@ public class UserService {
     private final UserAssignmentService assignmentService;
     private final UserRoleService userRoleService;
     private final UserMapper mapper;
+    private final Din91379TextValidation textValidation;
     private final UserRoleMapper roleMapper;
 
     @Transactional
     public User create(UserCreate dto) {
         CallingAdmin admin = accessScopeService.requireCallingAdmin();
 
-        String firstName = trimToNull(dto.getFirstName());
-        String lastName = trimToNull(dto.getLastName());
+        String firstName = textValidation.normalizeAndValidate(trimToNull(dto.getFirstName()), Din91379Type.DATATYPE_C);
+        String lastName = textValidation.normalizeAndValidate(trimToNull(dto.getLastName()), Din91379Type.DATATYPE_C);
         String email = lowerCase(trimToNull(dto.getEmail()));
 
         if (firstName == null || lastName == null || email == null) {
@@ -193,8 +196,8 @@ public class UserService {
             throw new BusinessException(ErrorCode.MISSING_REQUIRED_FIELD);
         }
 
-        String firstName = optionalName(dto.getFirstName());
-        String lastName = optionalName(dto.getLastName());
+        String firstName = textValidation.normalizeAndValidate(optionalName(dto.getFirstName()), Din91379Type.DATATYPE_C);
+        String lastName = textValidation.normalizeAndValidate(optionalName(dto.getLastName()), Din91379Type.DATATYPE_C);
         String email = lowerCase(optionalName(dto.getEmail()));
         // Absent means "keep the current assignment"; a target equal to the current one is a no-op too.
         Optional<ScopedUnit> reassignment = Assignment
