@@ -14,5 +14,5 @@ route:
 receivers:
   - name: email-alerts
     email_configs:
-      - to: vitalii.dudok@eleks.com
+      - to: vitalik.dudok@gmail.com
         send_resolved: true
