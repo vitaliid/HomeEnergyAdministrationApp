@@ -25,6 +25,8 @@ public interface HomeAdministrativeAreaRepository extends JpaRepository<HomeAdmi
     @EntityGraph(attributePaths = {"parent"})
     List<HomeAdministrativeAreaEntity> findByParentId(@NonNull UUID parentId);
 
+    Optional<HomeAdministrativeAreaEntity> findByCode(String code);
+
     /**
      * Every unit the user holds any role on, plus everything below each of them, at any depth.
      */

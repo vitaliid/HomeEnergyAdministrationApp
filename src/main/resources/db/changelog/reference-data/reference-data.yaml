@@ -1,0 +1,29 @@
+# Reference data: closed, code-like value sets the schema and the code depend on (FK targets,
+# enums in disguise). Identical in every environment, so it ships with the application.
+#
+# Each set is a CSV upserted by primary key; runOnChange re-applies a set whenever its CSV changes,
+# so a value is added or renamed by editing the CSV - never by a new INSERT changeset.
+# Rows removed from a CSV are NOT deleted: retiring a value is a data migration of its own.
+#
+# Environment-specific start data (areas, initial admins) is not reference data and does not
+# belong here - see org.example.bootstrap.
+databaseChangeLog:
+  - changeSet:
+      id: reference-data-building-zone
+      author: vitalii
+      runOnChange: true
+      changes:
+        - loadUpdateData:
+            tableName: building_zone
+            file: building-zone.csv
+            relativeToChangelogFile: true
+            primaryKey: id
+            separator: ","
+            encoding: UTF-8
+            columns:
+              - column:
+                  name: id
+                  type: STRING
+              - column:
+                  name: name
+                  type: STRING

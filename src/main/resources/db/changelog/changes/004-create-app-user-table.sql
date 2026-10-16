@@ -24,16 +24,3 @@ CREATE INDEX idx_app_user_home_administrative_area_id ON app_user (home_administ
 CREATE INDEX idx_app_user_outside_public_area_id ON app_user (outside_public_area_id);
 
 --rollback DROP TABLE app_user CASCADE;
-
-
---changeset vitalii:004-insert-initial-admin-users
---comment: Initial admin users, one per top-level home administrative area. Ids MUST match the Keycloak user ids.
-INSERT INTO app_user (id, home_administrative_area_id)
-VALUES ('a0000000-0000-4000-8000-000000000001', (SELECT id FROM home_administrative_area WHERE code = 'HOME001')),
-       ('a0000000-0000-4000-8000-000000000002', (SELECT id FROM home_administrative_area WHERE code = 'HOME002')),
-       ('a0000000-0000-4000-8000-000000000003', (SELECT id FROM home_administrative_area WHERE code = 'HOME003')),
-       ('a0000000-0000-4000-8000-000000000004', (SELECT id FROM home_administrative_area WHERE code = 'HOME004')),
-       ('a0000000-0000-4000-8000-000000000005',
-        (SELECT id FROM home_administrative_area WHERE code = 'HOME005')) ON CONFLICT (id) DO NOTHING;
-
---rollback DELETE FROM app_user WHERE id IN ('a0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000004', 'a0000000-0000-4000-8000-000000000005');

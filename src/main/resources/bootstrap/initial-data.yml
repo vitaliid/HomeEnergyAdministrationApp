@@ -1,0 +1,24 @@
+# Start data of an environment, applied by org.example.bootstrap.InitialDataBootstrap.
+#
+# Off by default; turn on with APP_BOOTSTRAP_ENABLED=true (locally, or as a one-off run / init job).
+# Idempotent: matched by area code and e-mail, only what is missing is created, so re-runs are safe.
+# Another environment overrides the lists as a whole (e.g. an external application-<profile>.yml,
+# a ConfigMap, or SPRING_APPLICATION_JSON) - the lists are replaced, not merged.
+#
+# Admins get a Keycloak account with app.keycloak.initial-password as a temporary password,
+# which Keycloak makes them change on first login.
+app:
+  bootstrap:
+    enabled: ${APP_BOOTSTRAP_ENABLED:false}
+    areas:
+      - { code: HOME001, name: Basement,     zone: HOME001 }
+      - { code: HOME002, name: Ground floor, zone: HOME002 }
+      - { code: HOME003, name: First floor,  zone: HOME003 }
+      - { code: HOME004, name: Second floor, zone: HOME004 }
+      - { code: HOME005, name: Attic,        zone: HOME005 }
+    admins:
+      - { email: habitant+homeadmin1@gmail.com, firstName: Admin, lastName: Basement,     areaCode: HOME001 }
+      - { email: habitant+homeadmin2@gmail.com, firstName: Admin, lastName: Ground floor, areaCode: HOME002 }
+      - { email: habitant+homeadmin3@gmail.com, firstName: Admin, lastName: First floor,  areaCode: HOME003 }
+      - { email: habitant+homeadmin4@gmail.com, firstName: Admin, lastName: Second floor, areaCode: HOME004 }
+      - { email: habitant+homeadmin5@gmail.com, firstName: Admin, lastName: Attic,        areaCode: HOME005 }

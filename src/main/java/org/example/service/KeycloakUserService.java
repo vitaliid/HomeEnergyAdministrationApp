@@ -146,6 +146,15 @@ public class KeycloakUserService {
         }
     }
 
+    public Optional<UserRepresentation> findByEmail(String email) {
+        try {
+            return registryRealm.users().searchByEmail(email, true).stream().findFirst();
+        } catch (ProcessingException | WebApplicationException ex) {
+            log.error("Keycloak user lookup failed for email={}", email, ex);
+            throw new BusinessException(ErrorCode.KEYCLOAK_UNAVAILABLE);
+        }
+    }
+
     public Stream<UserRepresentation> findByIds(Collection<UUID> ids) {
         return ids.stream()
                 .map(this::findById)

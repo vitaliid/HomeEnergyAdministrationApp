@@ -1,3 +1,6 @@
+# 1. Schema (changes/): DDL only - tables, constraints, indexes. Immutable once applied.
+# 2. Reference data (reference-data/): value sets the schema depends on, upserted from CSV.
+# Start data (areas, admins, Keycloak accounts) is not part of the changelog, see org.example.bootstrap.
 databaseChangeLog:
   - include:
       file: db/changelog/changes/000-user-action-log.sql
@@ -17,3 +20,6 @@ databaseChangeLog:
       file: db/changelog/changes/007-create-user-role-audit-table.sql
   - include:
       file: db/changelog/changes/008-create-esr-consumption-table.sql
+
+  - include:
+      file: db/changelog/reference-data/reference-data.yaml

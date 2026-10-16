@@ -35,21 +35,3 @@ CREATE UNIQUE INDEX uq_user_role_outside_public_area
     ON user_role (user_id, role, outside_public_area_id) WHERE outside_public_area_id IS NOT NULL;
 
 --rollback DROP TABLE user_role CASCADE;
-
-
---changeset vitalii:005-insert-initial-admin-roles
---comment: ADMIN role for each initial admin, scoped to their home administrative area.
-INSERT INTO user_role (user_id, role, home_administrative_area_id)
-VALUES ('a0000000-0000-4000-8000-000000000001', 'ADMIN',
-        (SELECT id FROM home_administrative_area WHERE code = 'HOME001')),
-       ('a0000000-0000-4000-8000-000000000002', 'ADMIN',
-        (SELECT id FROM home_administrative_area WHERE code = 'HOME002')),
-       ('a0000000-0000-4000-8000-000000000003', 'ADMIN',
-        (SELECT id FROM home_administrative_area WHERE code = 'HOME003')),
-       ('a0000000-0000-4000-8000-000000000004', 'ADMIN',
-        (SELECT id FROM home_administrative_area WHERE code = 'HOME004')),
-       ('a0000000-0000-4000-8000-000000000005', 'ADMIN',
-        (SELECT id FROM home_administrative_area WHERE code = 'HOME005')) ON CONFLICT (user_id, role, home_administrative_area_id)
-WHERE home_administrative_area_id IS NOT NULL DO NOTHING;
-
---rollback DELETE FROM user_role WHERE role = 'ADMIN' AND user_id IN ('a0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000004', 'a0000000-0000-4000-8000-000000000005');

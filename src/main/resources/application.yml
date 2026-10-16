@@ -33,6 +33,9 @@ management:
         enabled: true
 
 spring:
+  config:
+    # Start data (areas, initial admins), see org.example.bootstrap.InitialDataBootstrap
+    import: optional:classpath:bootstrap/initial-data.yml
   datasource:
     url: jdbc:postgresql://localhost:5432/homeenergyregistry
     username: postgres
