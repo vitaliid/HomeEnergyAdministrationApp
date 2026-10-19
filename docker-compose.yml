@@ -33,7 +33,7 @@ services:
       - keycloak-network
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.3
+    image: quay.io/keycloak/keycloak:26.7.5
     container_name: keycloak
     restart: unless-stopped
     # Realm configuration as code, see keycloak/README.md; an existing realm is not overwritten.

@@ -14,6 +14,9 @@ If error to run liquibase add this to VM options
 Greylog:
 http://localhost:9009/
 with username 'admin' and password 'lgvZGkxLRC'.
-or admin admin
+
+SMTP server
+test-keycloak
+ybpc euth ungd mhet
 
 
