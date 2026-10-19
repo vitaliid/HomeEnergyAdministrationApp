@@ -37,9 +37,14 @@ services:
     container_name: keycloak
     restart: unless-stopped
     # Realm configuration as code, see keycloak/README.md; an existing realm is not overwritten.
-    command: start --import-realm
+    # Theme caching is off so changes in keycloak/themes are visible after a page reload (local only).
+    command: start --import-realm --spi-theme--cache-themes=false --spi-theme--cache-templates=false --spi-theme--static-max-age=-1
     volumes:
       - ./keycloak/realm:/opt/keycloak/data/import:ro
+      # Custom login pages (FreeMarker themes), select per realm: Realm settings -> Themes
+      - ./keycloak/themes:/opt/keycloak/themes
+      # Extensions (provider JARs, e.g. the 2FA email authenticator); picked up on container restart
+      - ./keycloak/providers:/opt/keycloak/providers
     environment:
       KC_DB: postgres
       KC_DB_URL_HOST: postgres-keycloak
@@ -65,7 +70,7 @@ services:
     image: prom/prometheus:v2.55.1
     container_name: homeenergyregistry-prometheus
     ports:
-      - "9090:9090"
+      - "9091:9090" # host 9090 is taken by Keycloak
     depends_on:
       - alertmanager
     volumes:
