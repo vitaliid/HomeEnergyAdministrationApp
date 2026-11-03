@@ -13,15 +13,15 @@ public interface UserRoleRepository extends JpaRepository<UserRoleEntity, UUID> 
 
     List<UserRoleEntity> findAllByUserIdAndRole(UUID userId, Role role);
 
-    @EntityGraph(attributePaths = {"homeAdministrativeArea", "outsidePublicArea"})
+    @EntityGraph(attributePaths = {"homeAdministrativeArea", "yardPublicArea"})
     List<UserRoleEntity> findAllByUserId(UUID userId);
 
-    @EntityGraph(attributePaths = {"user", "homeAdministrativeArea", "outsidePublicArea"})
+    @EntityGraph(attributePaths = {"user", "homeAdministrativeArea", "yardPublicArea"})
     List<UserRoleEntity> findAllByUserIdIn(Collection<UUID> userIds);
 
     List<UserRoleEntity> findAllByRoleAndHomeAdministrativeAreaIdAndUserIdNot(
             Role role, UUID homeAdministrativeAreaId, UUID userId);
 
-    List<UserRoleEntity> findAllByRoleAndOutsidePublicAreaIdAndUserIdNot(
-            Role role, UUID outsidePublicAreaId, UUID userId);
+    List<UserRoleEntity> findAllByRoleAndYardPublicAreaIdAndUserIdNot(
+            Role role, UUID yardPublicAreaId, UUID userId);
 }

@@ -22,17 +22,17 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
             SELECT u
             FROM UserEntity u
                      LEFT JOIN FETCH u.homeAdministrativeArea
-                     LEFT JOIN FETCH u.outsidePublicArea pe
+                     LEFT JOIN FETCH u.yardPublicArea pe
                      LEFT JOIN FETCH pe.homeAdministrativeArea
             WHERE u.homeAdministrativeArea.id IN :homeAdministrativeAreaIds
-               OR pe.id IN :outsidePublicAreaIds
+               OR pe.id IN :yardPublicAreaIds
                OR EXISTS (SELECT r
                           FROM UserRoleEntity r
                           WHERE r.user = u
                             AND (r.homeAdministrativeArea.id IN :homeAdministrativeAreaIds
-                                 OR r.outsidePublicArea.id IN :outsidePublicAreaIds))
+                                 OR r.yardPublicArea.id IN :yardPublicAreaIds))
             """)
     List<UserEntity> findAllWithRoleOrAssignmentOn(
             @Param("homeAdministrativeAreaIds") Collection<UUID> homeAdministrativeAreaIds,
-            @Param("outsidePublicAreaIds") Collection<UUID> outsidePublicAreaIds);
+            @Param("yardPublicAreaIds") Collection<UUID> yardPublicAreaIds);
 }

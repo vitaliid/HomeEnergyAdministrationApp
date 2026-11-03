@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Energy Supply Register (ESR): building consumption entries of an outside public area and the ESR master data.
+ * Energy Supply Register (ESR): building consumption entries of a yard public area and the ESR master data.
  */
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class EsrController implements EsrApi {
 
     private final EsrConsumptionService esrConsumptionService;
 
-    // --- building consumption entries of an outside public area ---
+    // --- building consumption entries of a yard public area ---
 
     @Override
     public ResponseEntity<List<AbstractBuildingConsumption>> getBuildingEsrEntries(UUID id) {
@@ -38,15 +38,15 @@ public class EsrController implements EsrApi {
 
     @Override
     public ResponseEntity<AbstractBuildingConsumption> replaceBuildingEsrEntry(
-            UUID outsidePublicAreaId,
+            UUID yardPublicAreaId,
             UUID id,
             AbstractBuildingConsumptionInput abstractBuildingConsumptionInput) {
-        return ResponseEntity.ok(esrConsumptionService.update(outsidePublicAreaId, id, abstractBuildingConsumptionInput));
+        return ResponseEntity.ok(esrConsumptionService.update(yardPublicAreaId, id, abstractBuildingConsumptionInput));
     }
 
     @Override
-    public ResponseEntity<Void> deleteBuildingEsrEntry(UUID outsidePublicAreaId, UUID id) {
-        esrConsumptionService.delete(outsidePublicAreaId, id);
+    public ResponseEntity<Void> deleteBuildingEsrEntry(UUID yardPublicAreaId, UUID id) {
+        esrConsumptionService.delete(yardPublicAreaId, id);
         return ResponseEntity.ok().build();
     }
 

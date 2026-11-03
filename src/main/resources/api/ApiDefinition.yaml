@@ -15,8 +15,8 @@ servers:
 tags:
   - name: HomeAdministrativeAreas
     description: Operations related to home administrative areas
-  - name: OutsidePublicAreas
-    description: Operations related to outside public areas
+  - name: YardPublicAreas
+    description: Operations related to yard public areas
   - name: Users
     description: Operations related to user accounts
   - name: ESR
@@ -83,26 +83,26 @@ paths:
         "500":
           $ref: '#/components/responses/InternalServerError'
 
-  /outside-public-areas:
+  /yard-public-areas:
     get:
       tags:
-        - OutsidePublicAreas
-      summary: List outside public areas
+        - YardPublicAreas
+      summary: List yard public areas
       description: >
-        Returns the outside public areas within the caller's scope: the entities on which the caller
+        Returns the yard public areas within the caller's scope: the entities on which the caller
         holds any role directly, and every entity belonging to a home administrative area on which
         the caller holds any role or which is subordinate to such a unit. Every role is inherited
         downwards along the administrative hierarchy.
-      operationId: listOutsidePublicAreas
+      operationId: listYardPublicAreas
       responses:
         "200":
-          description: Successfully retrieved the list of outside public areas.
+          description: Successfully retrieved the list of yard public areas.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OutsidePublicArea'
+                  $ref: '#/components/schemas/YardPublicArea'
         "401":
           $ref: '#/components/responses/Unauthorized'
         "403":
@@ -112,33 +112,33 @@ paths:
 
     post:
       tags:
-        - OutsidePublicAreas
-      summary: Create an outside public area
+        - YardPublicAreas
+      summary: Create a yard public area
       description: >
-        Creates a new outside public area assigned to a home administrative area. Only a caller holding the
-        ADMIN role may create outside public areas, and only under a home administrative area within the
+        Creates a new yard public area assigned to a home administrative area. Only a caller holding the
+        ADMIN role may create yard public areas, and only under a home administrative area within the
         caller's Admin scope: a unit on which the caller holds ADMIN, or one subordinate to such
         a unit. A unit outside that scope is rejected as forbidden.
-      operationId: createOutsidePublicArea
+      operationId: createYardPublicArea
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OutsidePublicAreaCreate'
+              $ref: '#/components/schemas/YardPublicAreaCreate'
       responses:
         "201":
-          description: The outside public area was created.
+          description: The yard public area was created.
           headers:
             Location:
-              description: URI of the newly created outside public area.
+              description: URI of the newly created yard public area.
               schema:
                 type: string
-                example: /api/v1/outside-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
+                example: /api/v1/yard-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OutsidePublicArea'
+                $ref: '#/components/schemas/YardPublicArea'
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -148,17 +148,17 @@ paths:
         "500":
           $ref: '#/components/responses/InternalServerError'
 
-  /outside-public-areas/{id}:
+  /yard-public-areas/{id}:
     get:
       tags:
-        - OutsidePublicAreas
-      summary: Get outside public area by ID
+        - YardPublicAreas
+      summary: Get yard public area by ID
       description: >
-        Returns a single outside public area by its unique identifier. The entity must lie within the
+        Returns a single yard public area by its unique identifier. The entity must lie within the
         caller's scope: an entity on which the caller holds any role directly, or one belonging
         to a home administrative area on which the caller holds any role or which is subordinate to
         such a unit. An entity outside the caller's scope is reported as not found.
-      operationId: getOutsidePublicAreaById
+      operationId: getYardPublicAreaById
       parameters:
         - name: id
           in: path
@@ -167,11 +167,11 @@ paths:
             $ref: '#/components/schemas/Uuid'
       responses:
         "200":
-          description: Successfully retrieved the outside public area.
+          description: Successfully retrieved the yard public area.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OutsidePublicArea'
+                $ref: '#/components/schemas/YardPublicArea'
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -185,14 +185,14 @@ paths:
 
     patch:
       tags:
-        - OutsidePublicAreas
-      summary: Patch an outside public area
+        - YardPublicAreas
+      summary: Patch a yard public area
       description: >
-        Partially updates an outside public area. Only the supplied fields are changed. Only a caller
-        holding the ADMIN role may update outside public areas, and only those within the caller's
+        Partially updates a yard public area. Only the supplied fields are changed. Only a caller
+        holding the ADMIN role may update yard public areas, and only those within the caller's
         Admin scope; an entity outside that scope is reported as not found. Reassigning the entity
         to a home administrative area outside the caller's Admin scope is rejected as forbidden.
-      operationId: patchOutsidePublicArea
+      operationId: patchYardPublicArea
       parameters:
         - name: id
           in: path
@@ -204,14 +204,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OutsidePublicAreaUpdate'
+              $ref: '#/components/schemas/YardPublicAreaUpdate'
       responses:
         "200":
-          description: The outside public area was updated.
+          description: The yard public area was updated.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OutsidePublicArea'
+                $ref: '#/components/schemas/YardPublicArea'
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -225,13 +225,13 @@ paths:
 
     delete:
       tags:
-        - OutsidePublicAreas
-      summary: Delete an outside public area
+        - YardPublicAreas
+      summary: Delete a yard public area
       description: >
-        Deletes an outside public area by its unique identifier. Only a caller holding the ADMIN role may
-        delete outside public areas, and only those within the caller's Admin scope; an entity outside
+        Deletes a yard public area by its unique identifier. Only a caller holding the ADMIN role may
+        delete yard public areas, and only those within the caller's Admin scope; an entity outside
         that scope is reported as not found.
-      operationId: deleteOutsidePublicArea
+      operationId: deleteYardPublicArea
       parameters:
         - name: id
           in: path
@@ -240,7 +240,7 @@ paths:
             $ref: '#/components/schemas/Uuid'
       responses:
         "204":
-          description: The outside public area was deleted.
+          description: The yard public area was deleted.
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -430,13 +430,13 @@ paths:
         "500":
           $ref: '#/components/responses/InternalServerError'
 
-  # ESR building consumption entries of an outside public area
-  /outside-public-areas/{id}/esr/buildings:
+  # ESR building consumption entries of a yard public area
+  /yard-public-areas/{id}/esr/buildings:
     get:
       tags:
         - ESR
-        - OutsidePublicAreas
-      summary: Fetches the ESR entries for an outside public area
+        - YardPublicAreas
+      summary: Fetches the ESR entries for a yard public area
       operationId: getBuildingEsrEntries
       parameters:
         - name: id
@@ -446,7 +446,7 @@ paths:
             $ref: '#/components/schemas/Uuid'
       responses:
         "200":
-          description: The list of ESR (building) entries for the outside public area
+          description: The list of ESR (building) entries for the yard public area
           content:
             application/json:
               schema:
@@ -466,8 +466,8 @@ paths:
     post:
       tags:
         - ESR
-        - OutsidePublicAreas
-      summary: Create a new ESR (building) entry for the outside public area
+        - YardPublicAreas
+      summary: Create a new ESR (building) entry for the yard public area
       operationId: createBuildingEsrEntry
       parameters:
         - name: id
@@ -500,18 +500,18 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 
   # single building consumption entry
-  /outside-public-areas/{outsidePublicAreaId}/esr/buildings/{id}:
+  /yard-public-areas/{yardPublicAreaId}/esr/buildings/{id}:
     put:
       tags:
         - ESR
-        - OutsidePublicAreas
-      summary: Replace an ESR (building) entry for the outside public area
+        - YardPublicAreas
+      summary: Replace an ESR (building) entry for the yard public area
       operationId: replaceBuildingEsrEntry
       parameters:
-        - name: outsidePublicAreaId
+        - name: yardPublicAreaId
           in: path
           required: true
-          description: The outside public area the entry belongs to
+          description: The yard public area the entry belongs to
           schema:
             $ref: '#/components/schemas/Uuid'
         - name: id
@@ -546,14 +546,14 @@ paths:
     delete:
       tags:
         - ESR
-        - OutsidePublicAreas
-      summary: Delete an ESR (building) entry for the outside public area
+        - YardPublicAreas
+      summary: Delete an ESR (building) entry for the yard public area
       operationId: deleteBuildingEsrEntry
       parameters:
-        - name: outsidePublicAreaId
+        - name: yardPublicAreaId
           in: path
           required: true
-          description: The outside public area the entry belongs to
+          description: The yard public area the entry belongs to
           schema:
             $ref: '#/components/schemas/Uuid'
         - name: id
@@ -703,7 +703,7 @@ components:
       type: object
       required:
         - id
-        - outsidePublicArea
+        - yardPublicArea
         - category
         - consumption
         - start
@@ -711,8 +711,8 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/Uuid'
-        outsidePublicArea:
-          $ref: '#/components/schemas/OutsidePublicAreaReference'
+        yardPublicArea:
+          $ref: '#/components/schemas/YardPublicAreaReference'
         category:
           $ref: '#/components/schemas/BuildingConsumptionCategory'   # building consumption category (BWZK)
         consumption:
@@ -879,7 +879,7 @@ components:
         instance:
           type: string
           description: URI identifying the request that caused the error.
-          example: /api/v1/outside-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
+          example: /api/v1/yard-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
 
         traceId:
           type: string
@@ -919,9 +919,9 @@ components:
         parent:
           $ref: '#/components/schemas/HomeAdministrativeAreaReference'
 
-    OutsidePublicArea:
+    YardPublicArea:
       type: object
-      description: Represents an outside public area belonging to a home administrative area.
+      description: Represents a yard public area belonging to a home administrative area.
       required:
         - id
         - name
@@ -933,7 +933,7 @@ components:
           type: string
           minLength: 1
           maxLength: 256
-          description: Name of the outside public area.
+          description: Name of the yard public area.
           example: Municipal swimming pool Mitte
         homeAdministrativeArea:
           $ref: '#/components/schemas/HomeAdministrativeAreaReference'
@@ -965,9 +965,9 @@ components:
           description: "Hierarchy level of the home administrative area: 1 = top level, each level below increases by one."
           example: 1
 
-    OutsidePublicAreaReference:
+    YardPublicAreaReference:
       type: object
-      description: Reduced representation of an outside public area, used for user assignments.
+      description: Reduced representation of a yard public area, used for user assignments.
       required:
         - id
         - name
@@ -975,17 +975,17 @@ components:
       properties:
         objectType:
           type: string
-          example: "outside-public-area"
+          example: "yard-public-area"
         id:
           $ref: '#/components/schemas/Uuid'
         name:
           type: string
-          description: Name of the outside public area.
+          description: Name of the yard public area.
           example: Municipal swimming pool Mitte
 
-    OutsidePublicAreaCreate:
+    YardPublicAreaCreate:
       type: object
-      description: Payload for creating an outside public area.
+      description: Payload for creating a yard public area.
       required:
         - name
         - homeAdministrativeAreaId
@@ -994,28 +994,28 @@ components:
           type: string
           minLength: 1
           maxLength: 256
-          description: Name of the outside public area.
+          description: Name of the yard public area.
           example: Municipal swimming pool Mitte
         homeAdministrativeAreaId:
           allOf:
             - $ref: '#/components/schemas/Uuid'
-          description: Identifier of the home administrative area the outside public area belongs to.
+          description: Identifier of the home administrative area the yard public area belongs to.
 
-    OutsidePublicAreaUpdate:
+    YardPublicAreaUpdate:
       type: object
-      description: Payload for partially updating an outside public area. At least one field must be supplied.
+      description: Payload for partially updating a yard public area. At least one field must be supplied.
       minProperties: 1
       properties:
         name:
           type: string
           minLength: 1
           maxLength: 256
-          description: New name of the outside public area.
+          description: New name of the yard public area.
           example: Municipal swimming pool Mitte
         homeAdministrativeAreaId:
           allOf:
             - $ref: '#/components/schemas/Uuid'
-          description: Identifier of the home administrative area the outside public area is reassigned to.
+          description: Identifier of the home administrative area the yard public area is reassigned to.
 
     User:
       type: object
@@ -1081,7 +1081,7 @@ components:
     UserRole:
       type: object
       description: >
-        A role of a user within a scope (home administrative area or outside public area). The role is
+        A role of a user within a scope (home administrative area or yard public area). The role is
         inherited downwards: it applies to the scope itself and to every unit below it.
       required:
         - id
@@ -1098,7 +1098,7 @@ components:
     UserRoleCreate:
       type: object
       description: >
-        Payload for assigning a role to a user on a home administrative area or an outside public area.
+        Payload for assigning a role to a user on a home administrative area or a yard public area.
         The role also applies to everything below that unit in the administrative hierarchy.
       required:
         - role
@@ -1109,15 +1109,15 @@ components:
           allOf:
             - $ref: '#/components/schemas/Uuid'
           description: Identifier of the home administrative area the role applies to.
-        outsidePublicAreaId:
+        yardPublicAreaId:
           allOf:
             - $ref: '#/components/schemas/Uuid'
-          description: Identifier of the outside public area the role applies to.
+          description: Identifier of the yard public area the role applies to.
       oneOf:
         - required: [ homeAdministrativeAreaId ]
           not:
-            required: [ outsidePublicAreaId ]
-        - required: [ outsidePublicAreaId ]
+            required: [ yardPublicAreaId ]
+        - required: [ yardPublicAreaId ]
           not:
             required: [ homeAdministrativeAreaId ]
 
@@ -1126,19 +1126,19 @@ components:
       description: The organisational unit the user is assigned to.
       oneOf:
         - $ref: '#/components/schemas/HomeAdministrativeAreaReference'
-        - $ref: '#/components/schemas/OutsidePublicAreaReference'
+        - $ref: '#/components/schemas/YardPublicAreaReference'
       discriminator:
         propertyName: objectType
         mapping:
           homeAdministrativeAreaReference: '#/components/schemas/HomeAdministrativeAreaReference'
-          outsidePublicAreaReference: '#/components/schemas/OutsidePublicAreaReference'
+          yardPublicAreaReference: '#/components/schemas/YardPublicAreaReference'
 
     AssignmentType:
       type: string
       description: Discriminator for the organisational unit a user is assigned to.
       enum:
         - homeAdministrativeAreaReference
-        - outsidePublicAreaReference
+        - yardPublicAreaReference
 
     UserCreate:
       type: object
@@ -1168,10 +1168,10 @@ components:
           allOf:
             - $ref: '#/components/schemas/Uuid'
           description: Identifier of the home administrative area the user belongs to.
-        outsidePublicAreaId:
+        yardPublicAreaId:
           allOf:
             - $ref: '#/components/schemas/Uuid'
-          description: Identifier of the outside public area the user belongs to.
+          description: Identifier of the yard public area the user belongs to.
         roles:
           type: array
           description: Initial roles. Every unit must lie within the calling Admin's scope.
@@ -1180,8 +1180,8 @@ components:
       oneOf:
         - required: [ homeAdministrativeAreaId ]
           not:
-            required: [ outsidePublicAreaId ]
-        - required: [ outsidePublicAreaId ]
+            required: [ yardPublicAreaId ]
+        - required: [ yardPublicAreaId ]
           not:
             required: [ homeAdministrativeAreaId ]
 
@@ -1210,10 +1210,10 @@ components:
           allOf:
             - $ref: '#/components/schemas/Uuid'
           description: Identifier of the home administrative area the user is reassigned to.
-        outsidePublicAreaId:
+        yardPublicAreaId:
           allOf:
             - $ref: '#/components/schemas/Uuid'
-          description: Identifier of the outside public area the user is reassigned to.
+          description: Identifier of the yard public area the user is reassigned to.
         roles:
           type: array
           description: >
@@ -1227,7 +1227,7 @@ components:
             $ref: '#/components/schemas/UserRoleCreate'
       # At most one of the two: a patch may carry neither, for example when only roles change.
       not:
-        required: [ homeAdministrativeAreaId, outsidePublicAreaId ]
+        required: [ homeAdministrativeAreaId, yardPublicAreaId ]
 
     Uuid:
       type: string
@@ -1251,7 +1251,7 @@ components:
                 detail: The supplied identifier is not a valid UUID.
                 code: VALIDATION_001
                 timestamp: "2026-07-16T14:20:11Z"
-                instance: /api/v1/outside-public-areas/not-a-uuid
+                instance: /api/v1/yard-public-areas/not-a-uuid
                 traceId: 9b35d80dcbfd
             missingRequiredField:
               summary: Required field missing (bean validation)
@@ -1293,10 +1293,10 @@ components:
                 detail: No resource exists with the given id.
                 code: RESOURCE_001
                 timestamp: "2026-07-16T14:20:11Z"
-                instance: /api/v1/outside-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
+                instance: /api/v1/yard-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
                 traceId: 9b35d80dcbfd
             entityNotFound:
-              summary: Outside public area not found
+              summary: Yard public area not found
               value:
                 title: Entity not found
                 status: 404
@@ -1316,7 +1316,7 @@ components:
                 status: 409
                 detail: >
                   This is the last active Admin of the assigned home administrative area
-                  or outside public area. Repeat the request with confirmed=true to confirm.
+                  or yard public area. Repeat the request with confirmed=true to confirm.
                 code: LAST_ADMIN_CONFIRMATION_REQUIRED
 
     InternalServerError:
@@ -1334,7 +1334,7 @@ components:
                 detail: An unexpected error occurred while processing the request.
                 code: SYS_001
                 timestamp: "2026-07-16T14:20:11Z"
-                instance: /api/v1/outside-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
+                instance: /api/v1/yard-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
                 traceId: 9b35d80dcbfd
 
     Unauthorized:
@@ -1352,7 +1352,7 @@ components:
                 detail: Authentication is required to access this resource.
                 code: AUTH_001
                 timestamp: "2026-07-16T14:20:11Z"
-                instance: /api/v1/outside-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
+                instance: /api/v1/yard-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
                 traceId: 9b35d80dcbfd
 
     Forbidden:
@@ -1370,5 +1370,5 @@ components:
                 detail: You do not have the required permission for this operation.
                 code: AUTH_002
                 timestamp: "2026-07-16T14:20:11Z"
-                instance: /api/v1/outside-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
+                instance: /api/v1/yard-public-areas/3fa85f64-5717-4562-b3fc-2c963f66afa6
                 traceId: 9b35d80dcbfd

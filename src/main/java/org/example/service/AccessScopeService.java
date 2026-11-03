@@ -3,14 +3,14 @@ package org.example.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.entity.HomeAdministrativeAreaReferenceEntity;
-import org.example.entity.OutsidePublicAreaEntity;
+import org.example.entity.YardPublicAreaEntity;
 import org.example.entity.Role;
 import org.example.entity.UserEntity;
 import org.example.entity.UserRoleEntity;
 import org.example.exception.BusinessException;
 import org.example.exception.ErrorCode;
 import org.example.repository.HomeAdministrativeAreaRepository;
-import org.example.repository.OutsidePublicAreaRepository;
+import org.example.repository.YardPublicAreaRepository;
 import org.example.repository.UserRepository;
 import org.example.repository.UserRoleRepository;
 import org.example.security.CurrentUserProvider;
@@ -32,16 +32,16 @@ public class AccessScopeService {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final HomeAdministrativeAreaRepository homeAdministrativeAreaRepository;
-    private final OutsidePublicAreaRepository outsidePublicAreaRepository;
+    private final YardPublicAreaRepository yardPublicAreaRepository;
     private final CurrentUserProvider currentUserProvider;
 
     /**
      * The authenticated subject together with the home administrative areas of all its subtrees,
-     * and all outside public areas in them or administered directly.
+     * and all yard public areas in them or administered directly.
      */
     public record CallingAdmin(UserEntity user,
                                Set<UUID> homeAdministrativeAreaIds,
-                               Set<UUID> outsidePublicAreaIds) {
+                               Set<UUID> yardPublicAreaIds) {
 
         public UUID id() {
             return user.getId();
@@ -51,19 +51,19 @@ public class AccessScopeService {
             return homeAdministrativeAreaIds.contains(homeAdministrativeAreaId);
         }
 
-        public boolean coversOutsidePublicArea(UUID outsidePublicAreaId) {
-            return outsidePublicAreaIds.contains(outsidePublicAreaId);
+        public boolean coversYardPublicArea(UUID yardPublicAreaId) {
+            return yardPublicAreaIds.contains(yardPublicAreaId);
         }
 
         /**
          * Whether the one unit that is set lies in the scope.
          */
         public boolean covers(@Nullable HomeAdministrativeAreaReferenceEntity homeAdministrativeArea,
-                              @Nullable OutsidePublicAreaEntity outsidePublicArea) {
+                              @Nullable YardPublicAreaEntity yardPublicArea) {
             if (homeAdministrativeArea != null) {
                 return coversHomeAdministrativeArea(homeAdministrativeArea.getId());
             }
-            return outsidePublicArea != null && coversOutsidePublicArea(outsidePublicArea.getId());
+            return yardPublicArea != null && coversYardPublicArea(yardPublicArea.getId());
         }
     }
 
@@ -97,16 +97,16 @@ public class AccessScopeService {
                 ? Set.of()
                 : Set.copyOf(homeAdministrativeAreaRepository.findSelfAndDescendantIdsOfAny(roots));
 
-        Set<UUID> outsidePublicAreaIds = adminRoles.stream()
-                .map(UserRoleEntity::getOutsidePublicArea)
+        Set<UUID> yardPublicAreaIds = adminRoles.stream()
+                .map(UserRoleEntity::getYardPublicArea)
                 .filter(Objects::nonNull)
-                .map(OutsidePublicAreaEntity::getId)
+                .map(YardPublicAreaEntity::getId)
                 .collect(Collectors.toCollection(HashSet::new));
         if (!homeAdministrativeAreaIds.isEmpty()) {
-            outsidePublicAreaIds.addAll(outsidePublicAreaRepository.findAllIdsByHomeAdministrativeAreaIdIn(homeAdministrativeAreaIds));
+            yardPublicAreaIds.addAll(yardPublicAreaRepository.findAllIdsByHomeAdministrativeAreaIdIn(homeAdministrativeAreaIds));
         }
 
-        return new CallingAdmin(user, homeAdministrativeAreaIds, Set.copyOf(outsidePublicAreaIds));
+        return new CallingAdmin(user, homeAdministrativeAreaIds, Set.copyOf(yardPublicAreaIds));
     }
 
     /**
@@ -122,15 +122,15 @@ public class AccessScopeService {
         return id;
     }
 
-    public void requireRoleOnOutsidePublicArea(Role role, UUID outsidePublicAreaId) {
-        requireAnyRoleOnOutsidePublicArea(Set.of(role), outsidePublicAreaId);
+    public void requireRoleOnYardPublicArea(Role role, UUID yardPublicAreaId) {
+        requireAnyRoleOnYardPublicArea(Set.of(role), yardPublicAreaId);
     }
 
-    public void requireAnyRoleOnOutsidePublicArea(Set<Role> roles, UUID outsidePublicAreaId) {
+    public void requireAnyRoleOnYardPublicArea(Set<Role> roles, UUID yardPublicAreaId) {
         UUID userId = requireCurrentUserId();
         Set<String> dbValues = roles.stream().map(Role::getDbValue).collect(Collectors.toSet());
-        if (!outsidePublicAreaRepository.hasAnyRoleOnOutsidePublicArea(outsidePublicAreaId, userId, dbValues)) {
-            log.error("User {} holds none of {} covering outside public area {}", userId, roles, outsidePublicAreaId);
+        if (!yardPublicAreaRepository.hasAnyRoleOnYardPublicArea(yardPublicAreaId, userId, dbValues)) {
+            log.error("User {} holds none of {} covering yard public area {}", userId, roles, yardPublicAreaId);
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
     }
@@ -147,9 +147,9 @@ public class AccessScopeService {
      * their roles does. Both links count, independently of each other.
      */
     public void requireUserInScope(CallingAdmin admin, UserEntity user) {
-        boolean inScope = admin.covers(user.getHomeAdministrativeArea(), user.getOutsidePublicArea())
+        boolean inScope = admin.covers(user.getHomeAdministrativeArea(), user.getYardPublicArea())
                 || userRoleRepository.findAllByUserId(user.getId()).stream()
-                .anyMatch(role -> admin.covers(role.getHomeAdministrativeArea(), role.getOutsidePublicArea()));
+                .anyMatch(role -> admin.covers(role.getHomeAdministrativeArea(), role.getYardPublicArea()));
 
         if (!inScope) {
             log.error("User {} is outside the scope of user {}", user.getId(), admin.id());
@@ -161,7 +161,7 @@ public class AccessScopeService {
         List<UserRoleEntity> roles = userRoleRepository.findAllByUserId(user.getId());
 
         boolean allInScope = roles.stream()
-                .allMatch(role -> admin.covers(role.getHomeAdministrativeArea(), role.getOutsidePublicArea()));
+                .allMatch(role -> admin.covers(role.getHomeAdministrativeArea(), role.getYardPublicArea()));
 
         if (!allInScope) {
             log.error("User {} holds roles outside the scope of user {}", user.getId(), admin.id());
@@ -178,9 +178,9 @@ public class AccessScopeService {
         }
     }
 
-    public void requireOutsidePublicAreaInScope(CallingAdmin admin, OutsidePublicAreaEntity outsidePublicArea) {
-        if (!admin.coversOutsidePublicArea(outsidePublicArea.getId())) {
-            log.error("Outside public area {} is outside the scope of user {}", outsidePublicArea.getId(), admin.id());
+    public void requireYardPublicAreaInScope(CallingAdmin admin, YardPublicAreaEntity yardPublicArea) {
+        if (!admin.coversYardPublicArea(yardPublicArea.getId())) {
+            log.error("Yard public area {} is outside the scope of user {}", yardPublicArea.getId(), admin.id());
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
     }

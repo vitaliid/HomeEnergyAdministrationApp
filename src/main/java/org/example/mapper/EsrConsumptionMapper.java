@@ -11,7 +11,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = OutsidePublicAreaMapper.class)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = YardPublicAreaMapper.class)
 public interface EsrConsumptionMapper {
 
     default AbstractBuildingConsumption toApiModel(EsrConsumptionEntity entity) {

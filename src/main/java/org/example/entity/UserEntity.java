@@ -36,8 +36,8 @@ public class UserEntity extends BaseAuditEntity implements Persistable<UUID> {
     private @Nullable HomeAdministrativeAreaReferenceEntity homeAdministrativeArea;
 
     @ManyToOne
-    @JoinColumn(name = "outside_public_area_id")
-    private @Nullable OutsidePublicAreaEntity outsidePublicArea;
+    @JoinColumn(name = "yard_public_area_id")
+    private @Nullable YardPublicAreaEntity yardPublicArea;
 
     /**
      * Not persisted; only tells Spring Data to {@code persist()} rather than {@code merge()}.

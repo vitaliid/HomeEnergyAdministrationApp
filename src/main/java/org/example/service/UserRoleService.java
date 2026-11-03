@@ -2,7 +2,7 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.entity.HomeAdministrativeAreaReferenceEntity;
-import org.example.entity.OutsidePublicAreaEntity;
+import org.example.entity.YardPublicAreaEntity;
 import org.example.entity.Role;
 import org.example.entity.UserEntity;
 import org.example.entity.UserRoleEntity;
@@ -46,8 +46,8 @@ public class UserRoleService {
             switch (unit) {
                 case ScopedUnit.ToHomeAdministrativeArea(HomeAdministrativeAreaReferenceEntity homeAdministrativeArea) ->
                         entity.setHomeAdministrativeArea(homeAdministrativeArea);
-                case ScopedUnit.ToOutsidePublicArea(OutsidePublicAreaEntity outsidePublicArea) ->
-                        entity.setOutsidePublicArea(outsidePublicArea);
+                case ScopedUnit.ToYardPublicArea(YardPublicAreaEntity yardPublicArea) ->
+                        entity.setYardPublicArea(yardPublicArea);
             }
             return entity;
         }
@@ -64,7 +64,7 @@ public class UserRoleService {
 
         Map<Key, RoleGrant> grants = new LinkedHashMap<>();
         for (UserRoleCreate role : roles) {
-            Assignment assignment = Assignment.from(role.getHomeAdministrativeAreaId(), role.getOutsidePublicAreaId())
+            Assignment assignment = Assignment.from(role.getHomeAdministrativeAreaId(), role.getYardPublicAreaId())
                     .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_ASSIGNMENT));
 
             grants.computeIfAbsent(new Key(role.getRole(), assignment), key ->
@@ -138,9 +138,9 @@ public class UserRoleService {
             return new RoleKey(entity.getRole(),
                     new Assignment.OfHomeAdministrativeArea(entity.getHomeAdministrativeArea().getId()));
         }
-        if (entity.getOutsidePublicArea() != null) {
+        if (entity.getYardPublicArea() != null) {
             return new RoleKey(entity.getRole(),
-                    new Assignment.OfOutsidePublicArea(entity.getOutsidePublicArea().getId()));
+                    new Assignment.OfYardPublicArea(entity.getYardPublicArea().getId()));
         }
         // ck_user_role_single_scope_required makes this unreachable for persisted rows.
         throw new IllegalStateException("UserRole without scope: " + entity);
@@ -150,20 +150,20 @@ public class UserRoleService {
         return switch (grant.unit()) {
             case ScopedUnit.ToHomeAdministrativeArea(HomeAdministrativeAreaReferenceEntity unit) ->
                     new RoleKey(grant.role(), new Assignment.OfHomeAdministrativeArea(unit.getId()));
-            case ScopedUnit.ToOutsidePublicArea(OutsidePublicAreaEntity outsidePublicArea) ->
-                    new RoleKey(grant.role(), new Assignment.OfOutsidePublicArea(outsidePublicArea.getId()));
+            case ScopedUnit.ToYardPublicArea(YardPublicAreaEntity yardPublicArea) ->
+                    new RoleKey(grant.role(), new Assignment.OfYardPublicArea(yardPublicArea.getId()));
         };
     }
 
     public List<UserRoleEntity> findVisible(CallingAdmin admin, UUID userId) {
         return repository.findAllByUserId(userId).stream()
-                .filter(role -> admin.covers(role.getHomeAdministrativeArea(), role.getOutsidePublicArea()))
+                .filter(role -> admin.covers(role.getHomeAdministrativeArea(), role.getYardPublicArea()))
                 .toList();
     }
 
     public Map<UUID, List<UserRoleEntity>> findVisibleByUserIds(CallingAdmin admin, Collection<UUID> userIds) {
         return repository.findAllByUserIdIn(userIds).stream()
-                .filter(role -> admin.covers(role.getHomeAdministrativeArea(), role.getOutsidePublicArea()))
+                .filter(role -> admin.covers(role.getHomeAdministrativeArea(), role.getYardPublicArea()))
                 .collect(Collectors.groupingBy(role -> role.getUser().getId()));
     }
 }

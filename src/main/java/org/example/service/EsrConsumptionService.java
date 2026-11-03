@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.entity.BuildingConsumptionEntity;
 import org.example.entity.EsrConsumptionEntity;
 import org.example.entity.HeatBuildingConsumptionEntity;
-import org.example.entity.OutsidePublicAreaEntity;
+import org.example.entity.YardPublicAreaEntity;
 import org.example.entity.Role;
 import org.example.exception.BusinessException;
 import org.example.exception.ErrorCode;
@@ -14,7 +14,7 @@ import org.example.model.AbstractBuildingConsumptionInput;
 import org.example.model.BuildingConsumptionInput;
 import org.example.model.HeatBuildingConsumptionInput;
 import org.example.repository.EsrConsumptionRepository;
-import org.example.repository.OutsidePublicAreaRepository;
+import org.example.repository.YardPublicAreaRepository;
 import org.example.validation.EsrConsumptionValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,32 +25,32 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Building consumption entries of an outside public area in the Energy Supply Register.
+ * Building consumption entries of a yard public area in the Energy Supply Register.
  */
 @Service
 @RequiredArgsConstructor
 public class EsrConsumptionService {
 
     private final EsrConsumptionRepository repository;
-    private final OutsidePublicAreaRepository outsidePublicAreaRepository;
+    private final YardPublicAreaRepository yardPublicAreaRepository;
     private final EsrConsumptionMapper mapper;
     private final EsrConsumptionValidator validator;
     private final AccessScopeService accessScopeService;
 
     @Transactional(readOnly = true)
-    public List<AbstractBuildingConsumption> getAll(UUID outsidePublicAreaId) {
-        OutsidePublicAreaEntity outsidePublicArea = requireOutsidePublicArea(outsidePublicAreaId);
-        accessScopeService.requireAnyRoleOnOutsidePublicArea(Role.ESR_ROLES, outsidePublicArea.getId());
+    public List<AbstractBuildingConsumption> getAll(UUID yardPublicAreaId) {
+        YardPublicAreaEntity yardPublicArea = requireYardPublicArea(yardPublicAreaId);
+        accessScopeService.requireAnyRoleOnYardPublicArea(Role.ESR_ROLES, yardPublicArea.getId());
 
-        return repository.findAllByOutsidePublicAreaIdOrderByStartAscCreatedAtAsc(outsidePublicArea.getId()).stream()
+        return repository.findAllByYardPublicAreaIdOrderByStartAscCreatedAtAsc(yardPublicArea.getId()).stream()
                 .map(mapper::toApiModel)
                 .toList();
     }
 
     @Transactional
-    public AbstractBuildingConsumption create(UUID outsidePublicAreaId, AbstractBuildingConsumptionInput input) {
-        OutsidePublicAreaEntity outsidePublicArea = requireOutsidePublicArea(outsidePublicAreaId);
-        accessScopeService.requireRoleOnOutsidePublicArea(Role.ESR_EDITOR, outsidePublicArea.getId());
+    public AbstractBuildingConsumption create(UUID yardPublicAreaId, AbstractBuildingConsumptionInput input) {
+        YardPublicAreaEntity yardPublicArea = requireYardPublicArea(yardPublicAreaId);
+        accessScopeService.requireRoleOnYardPublicArea(Role.ESR_EDITOR, yardPublicArea.getId());
 
         validator.validate(input);
 
@@ -59,19 +59,19 @@ public class EsrConsumptionService {
             case BuildingConsumptionInput building -> toEntity(building);
             default -> throw new IllegalStateException("Unknown input type: " + input.getClass());
         };
-        entity.setOutsidePublicArea(outsidePublicArea);
+        entity.setYardPublicArea(yardPublicArea);
 
         EsrConsumptionEntity saved = repository.saveAndFlush(entity);
         return mapper.toApiModel(saved);
     }
 
     @Transactional
-    public AbstractBuildingConsumption update(UUID outsidePublicAreaId, UUID id, AbstractBuildingConsumptionInput input) {
-        OutsidePublicAreaEntity outsidePublicArea = requireOutsidePublicArea(outsidePublicAreaId);
-        accessScopeService.requireRoleOnOutsidePublicArea(Role.ESR_EDITOR, outsidePublicArea.getId());
+    public AbstractBuildingConsumption update(UUID yardPublicAreaId, UUID id, AbstractBuildingConsumptionInput input) {
+        YardPublicAreaEntity yardPublicArea = requireYardPublicArea(yardPublicAreaId);
+        accessScopeService.requireRoleOnYardPublicArea(Role.ESR_EDITOR, yardPublicArea.getId());
 
-        // id and outside public area id are checked together: an entry of another entity is "not found"
-        EsrConsumptionEntity entity = repository.findByIdAndOutsidePublicAreaId(id, outsidePublicArea.getId())
+        // id and yard public area id are checked together: an entry of another entity is "not found"
+        EsrConsumptionEntity entity = repository.findByIdAndYardPublicAreaId(id, yardPublicArea.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 
         validator.validate(input);
@@ -90,18 +90,18 @@ public class EsrConsumptionService {
     }
 
     @Transactional
-    public void delete(UUID outsidePublicAreaId, UUID id) {
-        OutsidePublicAreaEntity outsidePublicArea = requireOutsidePublicArea(outsidePublicAreaId);
-        accessScopeService.requireRoleOnOutsidePublicArea(Role.ESR_EDITOR, outsidePublicArea.getId());
+    public void delete(UUID yardPublicAreaId, UUID id) {
+        YardPublicAreaEntity yardPublicArea = requireYardPublicArea(yardPublicAreaId);
+        accessScopeService.requireRoleOnYardPublicArea(Role.ESR_EDITOR, yardPublicArea.getId());
 
-        EsrConsumptionEntity entity = repository.findByIdAndOutsidePublicAreaId(id, outsidePublicArea.getId())
+        EsrConsumptionEntity entity = repository.findByIdAndYardPublicAreaId(id, yardPublicArea.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
 
         repository.delete(entity);
     }
 
-    private OutsidePublicAreaEntity requireOutsidePublicArea(UUID outsidePublicAreaId) {
-        return outsidePublicAreaRepository.findById(outsidePublicAreaId)
+    private YardPublicAreaEntity requireYardPublicArea(UUID yardPublicAreaId) {
+        return yardPublicAreaRepository.findById(yardPublicAreaId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ENTITY_NOT_FOUND));
     }
 

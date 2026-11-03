@@ -18,22 +18,22 @@ public sealed interface Assignment {
     record OfHomeAdministrativeArea(UUID id) implements Assignment {
     }
 
-    record OfOutsidePublicArea(UUID id) implements Assignment {
+    record OfYardPublicArea(UUID id) implements Assignment {
     }
 
     /**
      * Empty when neither id is given - the caller decides whether that is allowed. Both given
      * mirrors {@code ck_app_user_single_assignment_required}.
      */
-    static Optional<Assignment> from(@Nullable UUID homeAdministrativeAreaId, @Nullable UUID outsidePublicAreaId) {
-        if (homeAdministrativeAreaId != null && outsidePublicAreaId != null) {
+    static Optional<Assignment> from(@Nullable UUID homeAdministrativeAreaId, @Nullable UUID yardPublicAreaId) {
+        if (homeAdministrativeAreaId != null && yardPublicAreaId != null) {
             throw new BusinessException(ErrorCode.INVALID_ASSIGNMENT);
         }
         if (homeAdministrativeAreaId != null) {
             return Optional.of(new OfHomeAdministrativeArea(homeAdministrativeAreaId));
         }
-        if (outsidePublicAreaId != null) {
-            return Optional.of(new OfOutsidePublicArea(outsidePublicAreaId));
+        if (yardPublicAreaId != null) {
+            return Optional.of(new OfYardPublicArea(yardPublicAreaId));
         }
         return Optional.empty();
     }

@@ -19,7 +19,7 @@ import java.util.List;
 public class UserMapper {
 
     private final HomeAdministrativeAreaMapper homeAdministrativeAreaMapper;
-    private final OutsidePublicAreaMapper outsidePublicAreaMapper;
+    private final YardPublicAreaMapper yardPublicAreaMapper;
 
     public User toApiModel(UserEntity entity, String firstName, String lastName, String email, boolean active,
                            List<UserRole> roles) {
@@ -48,8 +48,8 @@ public class UserMapper {
         if (entity.getHomeAdministrativeArea() != null) {
             return homeAdministrativeAreaMapper.toReference(entity.getHomeAdministrativeArea());
         }
-        if (entity.getOutsidePublicArea() != null) {
-            return outsidePublicAreaMapper.toReference(entity.getOutsidePublicArea());
+        if (entity.getYardPublicArea() != null) {
+            return yardPublicAreaMapper.toReference(entity.getYardPublicArea());
         }
         // ck_app_user_single_assignment_required makes this unreachable for persisted rows.
         throw new IllegalStateException("User without assignment: " + entity);

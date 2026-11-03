@@ -2,12 +2,12 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.entity.HomeAdministrativeAreaReferenceEntity;
-import org.example.entity.OutsidePublicAreaEntity;
+import org.example.entity.YardPublicAreaEntity;
 import org.example.entity.UserEntity;
 import org.example.exception.BusinessException;
 import org.example.exception.ErrorCode;
 import org.example.repository.HomeAdministrativeAreaReferenceRepository;
-import org.example.repository.OutsidePublicAreaRepository;
+import org.example.repository.YardPublicAreaRepository;
 import org.example.service.AccessScopeService.CallingAdmin;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ import java.util.UUID;
 public class UserAssignmentService {
 
     private final HomeAdministrativeAreaReferenceRepository homeAdministrativeAreaReferenceRepository;
-    private final OutsidePublicAreaRepository outsidePublicAreaRepository;
+    private final YardPublicAreaRepository yardPublicAreaRepository;
     private final AccessScopeService accessScopeService;
 
     /**
@@ -35,18 +35,18 @@ public class UserAssignmentService {
         record ToHomeAdministrativeArea(HomeAdministrativeAreaReferenceEntity unit) implements ScopedUnit {
         }
 
-        record ToOutsidePublicArea(OutsidePublicAreaEntity outsidePublicArea) implements ScopedUnit {
+        record ToYardPublicArea(YardPublicAreaEntity yardPublicArea) implements ScopedUnit {
         }
 
         default void applyTo(UserEntity user) {
             switch (this) {
                 case ToHomeAdministrativeArea(HomeAdministrativeAreaReferenceEntity unit) -> {
                     user.setHomeAdministrativeArea(unit);
-                    user.setOutsidePublicArea(null);
+                    user.setYardPublicArea(null);
                 }
-                case ToOutsidePublicArea(OutsidePublicAreaEntity outsidePublicArea) -> {
+                case ToYardPublicArea(YardPublicAreaEntity yardPublicArea) -> {
                     user.setHomeAdministrativeArea(null);
-                    user.setOutsidePublicArea(outsidePublicArea);
+                    user.setYardPublicArea(yardPublicArea);
                 }
             }
         }
@@ -61,12 +61,12 @@ public class UserAssignmentService {
                 accessScopeService.requireHomeAdministrativeAreaInScope(admin, unit.getId());
                 yield new ScopedUnit.ToHomeAdministrativeArea(unit);
             }
-            case Assignment.OfOutsidePublicArea(UUID id) -> {
-                OutsidePublicAreaEntity outsidePublicArea = outsidePublicAreaRepository.findById(id)
+            case Assignment.OfYardPublicArea(UUID id) -> {
+                YardPublicAreaEntity yardPublicArea = yardPublicAreaRepository.findById(id)
                         .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_PARENT));
 
-                accessScopeService.requireOutsidePublicAreaInScope(admin, outsidePublicArea);
-                yield new ScopedUnit.ToOutsidePublicArea(outsidePublicArea);
+                accessScopeService.requireYardPublicAreaInScope(admin, yardPublicArea);
+                yield new ScopedUnit.ToYardPublicArea(yardPublicArea);
             }
         };
     }
@@ -87,8 +87,8 @@ public class UserAssignmentService {
         return switch (target) {
             case Assignment.OfHomeAdministrativeArea(UUID id) ->
                     user.getHomeAdministrativeArea() != null && id.equals(user.getHomeAdministrativeArea().getId());
-            case Assignment.OfOutsidePublicArea(UUID id) ->
-                    user.getOutsidePublicArea() != null && id.equals(user.getOutsidePublicArea().getId());
+            case Assignment.OfYardPublicArea(UUID id) ->
+                    user.getYardPublicArea() != null && id.equals(user.getYardPublicArea().getId());
         };
     }
 }

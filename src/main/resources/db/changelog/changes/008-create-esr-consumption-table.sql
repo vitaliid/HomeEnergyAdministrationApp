@@ -1,11 +1,11 @@
 --liquibase formatted sql
 
 --changeset vitalii:008-create-esr-consumption-table
---comment: ESR energy consumption entries of an outside public area (single table: BuildingConsumption | HeatBuildingConsumption)
+--comment: ESR energy consumption entries of a yard public area (single table: BuildingConsumption | HeatBuildingConsumption)
 CREATE TABLE esr_consumption
 (
     id                     UUID                     NOT NULL DEFAULT gen_random_uuid(),
-    outside_public_area_id       UUID                     NOT NULL,
+    yard_public_area_id       UUID                     NOT NULL,
     discriminator          VARCHAR(32)              NOT NULL,
     category_id            UUID,
     energy_carrier_unit_id UUID,
@@ -20,8 +20,8 @@ CREATE TABLE esr_consumption
     updated_by             UUID                     NOT NULL,
 
     CONSTRAINT pk_esr_consumption PRIMARY KEY (id),
-    CONSTRAINT fk_esr_consumption_outside_public_area
-        FOREIGN KEY (outside_public_area_id) REFERENCES outside_public_area (id),
+    CONSTRAINT fk_esr_consumption_yard_public_area
+        FOREIGN KEY (yard_public_area_id) REFERENCES yard_public_area (id),
     CONSTRAINT fk_esr_consumption_created_by FOREIGN KEY (created_by) REFERENCES app_user (id),
     CONSTRAINT fk_esr_consumption_updated_by FOREIGN KEY (updated_by) REFERENCES app_user (id),
 
@@ -34,7 +34,7 @@ CREATE TABLE esr_consumption
         CHECK ((discriminator = 'HeatBuildingConsumption') = (is_weather_adjusted IS NOT NULL))
 );
 
-CREATE INDEX idx_esr_consumption_outside_public_area_id ON esr_consumption (outside_public_area_id);
+CREATE INDEX idx_esr_consumption_yard_public_area_id ON esr_consumption (yard_public_area_id);
 
 --rollback DROP TABLE esr_consumption;
 
@@ -45,7 +45,7 @@ CREATE TABLE esr_consumption_aud
     id                     UUID     NOT NULL,
     rev                    INTEGER  NOT NULL,
     revtype                SMALLINT NOT NULL,
-    outside_public_area_id       UUID,
+    yard_public_area_id       UUID,
     discriminator          VARCHAR(32),
     category_id            UUID,
     energy_carrier_unit_id UUID,
@@ -62,6 +62,6 @@ CREATE TABLE esr_consumption_aud
     CONSTRAINT fk_esr_consumption_aud_revinfo FOREIGN KEY (rev) REFERENCES revinfo (id)
 );
 
-CREATE INDEX idx_esr_consumption_aud_outside_public_area_id ON esr_consumption_aud (outside_public_area_id);
+CREATE INDEX idx_esr_consumption_aud_yard_public_area_id ON esr_consumption_aud (yard_public_area_id);
 
 --rollback DROP TABLE esr_consumption_aud;

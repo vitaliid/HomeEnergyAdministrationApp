@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface EsrConsumptionRepository extends JpaRepository<EsrConsumptionEntity, UUID> {
 
-    List<EsrConsumptionEntity> findAllByOutsidePublicAreaIdOrderByStartAscCreatedAtAsc(UUID outsidePublicAreaId);
+    List<EsrConsumptionEntity> findAllByYardPublicAreaIdOrderByStartAscCreatedAtAsc(UUID yardPublicAreaId);
 
-    Optional<EsrConsumptionEntity> findByIdAndOutsidePublicAreaId(UUID id, UUID outsidePublicAreaId);
+    Optional<EsrConsumptionEntity> findByIdAndYardPublicAreaId(UUID id, UUID yardPublicAreaId);
 }

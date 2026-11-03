@@ -62,7 +62,7 @@ public class UserService {
         }
 
         // Unlike patch, a new user must be assigned somewhere.
-        Assignment assignment = Assignment.from(dto.getHomeAdministrativeAreaId(), dto.getOutsidePublicAreaId())
+        Assignment assignment = Assignment.from(dto.getHomeAdministrativeAreaId(), dto.getYardPublicAreaId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_ASSIGNMENT));
 
         // Everything that can reject the request runs before the Keycloak account exists.
@@ -148,8 +148,8 @@ public class UserService {
                     Role.ADMIN, ownRole.getHomeAdministrativeArea().getId(), id);
         }
 
-        return userRoleRepository.findAllByRoleAndOutsidePublicAreaIdAndUserIdNot(
-                Role.ADMIN, ownRole.getOutsidePublicArea().getId(), id);
+        return userRoleRepository.findAllByRoleAndYardPublicAreaIdAndUserIdNot(
+                Role.ADMIN, ownRole.getYardPublicArea().getId(), id);
     }
 
     private boolean isActiveInKeycloak(UUID id) {
@@ -191,7 +191,7 @@ public class UserService {
         accessScopeService.requireUserInScope(admin, entity);
 
         if (dto.getFirstName() == null && dto.getLastName() == null && dto.getEmail() == null
-                && dto.getHomeAdministrativeAreaId() == null && dto.getOutsidePublicAreaId() == null
+                && dto.getHomeAdministrativeAreaId() == null && dto.getYardPublicAreaId() == null
                 && dto.getRoles() == null) {
             throw new BusinessException(ErrorCode.MISSING_REQUIRED_FIELD);
         }
@@ -201,7 +201,7 @@ public class UserService {
         String email = lowerCase(optionalName(dto.getEmail()));
         // Absent means "keep the current assignment"; a target equal to the current one is a no-op too.
         Optional<ScopedUnit> reassignment = Assignment
-                .from(dto.getHomeAdministrativeAreaId(), dto.getOutsidePublicAreaId())
+                .from(dto.getHomeAdministrativeAreaId(), dto.getYardPublicAreaId())
                 .flatMap(target -> assignmentService.loadScopedUnitIfChanged(admin, entity, target));
 
         if (dto.getRoles() != null) {
@@ -240,7 +240,7 @@ public class UserService {
         CallingAdmin admin = accessScopeService.requireCallingAdmin();
 
         List<UserEntity> entities = userRepository.findAllWithRoleOrAssignmentOn(
-                admin.homeAdministrativeAreaIds(), admin.outsidePublicAreaIds());
+                admin.homeAdministrativeAreaIds(), admin.yardPublicAreaIds());
 
         if (entities.isEmpty()) {
             return List.of();

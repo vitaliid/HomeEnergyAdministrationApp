@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * A role of a user on exactly one scope: a home administrative area or an outside public area.
+ * A role of a user on exactly one scope: a home administrative area or a yard public area.
  */
 @Getter
 @Setter
@@ -52,8 +52,8 @@ public class UserRoleEntity extends BaseAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @JoinColumn(name = "outside_public_area_id", updatable = false)
-    private @Nullable OutsidePublicAreaEntity outsidePublicArea;
+    @JoinColumn(name = "yard_public_area_id", updatable = false)
+    private @Nullable YardPublicAreaEntity yardPublicArea;
 
     @Override
     public boolean equals(Object o) {

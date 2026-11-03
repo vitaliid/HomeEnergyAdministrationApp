@@ -11,7 +11,7 @@ CREATE TABLE user_role_aud
     user_id                UUID,
     role                   VARCHAR(32),
     home_administrative_area_id UUID,
-    outside_public_area_id       UUID,
+    yard_public_area_id       UUID,
     created_at             TIMESTAMP WITH TIME ZONE,
     updated_at             TIMESTAMP WITH TIME ZONE,
 

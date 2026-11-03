@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Energy consumption entry of an outside public area in the Energy Supply Register (ESR).
+ * Energy consumption entry of a yard public area in the Energy Supply Register (ESR).
  * Single table; the discriminator tells plain building consumption from heat-only consumption.
  */
 @Getter
@@ -47,8 +47,8 @@ public abstract class EsrConsumptionEntity extends BaseUserAuditEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @JoinColumn(name = "outside_public_area_id", nullable = false, updatable = false)
-    private OutsidePublicAreaEntity outsidePublicArea;
+    @JoinColumn(name = "yard_public_area_id", nullable = false, updatable = false)
+    private YardPublicAreaEntity yardPublicArea;
 
     // TODO master data: becomes a FK to the BWZK category table; ignored until then
     @Column(name = "category_id")

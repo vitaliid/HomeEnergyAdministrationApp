@@ -18,7 +18,7 @@ import java.util.List;
 public class UserRoleMapper {
 
     private final HomeAdministrativeAreaMapper homeAdministrativeAreaMapper;
-    private final OutsidePublicAreaMapper outsidePublicAreaMapper;
+    private final YardPublicAreaMapper yardPublicAreaMapper;
 
     public Role toEntity(org.example.model.Role role) {
         return Role.valueOf(role.name());
@@ -44,8 +44,8 @@ public class UserRoleMapper {
         if (entity.getHomeAdministrativeArea() != null) {
             return homeAdministrativeAreaMapper.toReference(entity.getHomeAdministrativeArea());
         }
-        if (entity.getOutsidePublicArea() != null) {
-            return outsidePublicAreaMapper.toReference(entity.getOutsidePublicArea());
+        if (entity.getYardPublicArea() != null) {
+            return yardPublicAreaMapper.toReference(entity.getYardPublicArea());
         }
         // ck_user_role_single_scope_required makes this unreachable for persisted rows.
         throw new IllegalStateException("UserRole without scope: " + entity);
